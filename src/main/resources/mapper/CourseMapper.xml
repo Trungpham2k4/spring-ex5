@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fa.training.ex5.mapper.CourseMapper">
+
+    <select id="findById" resultType="Course">
+        SELECT course_id, course_name, duration, description
+        FROM course
+        WHERE course_id = #{courseId}
+    </select>
+
+    <select id="findAll" resultType="Course">
+        SELECT course_id, course_name, duration, description
+        FROM course
+    </select>
+
+    <select id="findPage" resultType="Course">
+        SELECT course_id, course_name, duration, description
+        FROM course
+        OFFSET #{offset} LIMIT #{limit}
+    </select>
+
+    <insert id="save" parameterType="Course">
+        INSERT INTO course(course_id, course_name, duration, description)
+        VALUES (#{courseId}, #{courseName}, #{duration}, #{description})
+    </insert>
+
+    <update id="update" parameterType="Course">
+        UPDATE course
+        SET course_name = #{courseName},
+            duration = #{duration},
+            description = #{description}
+        WHERE course_id = #{courseId}
+    </update>
+
+    <delete id="delete" parameterType="java.util.UUID">
+        DELETE FROM course
+        WHERE course_id = #{courseId}
+    </delete>
+
+
+    <select id="search" resultType="Course">
+        SELECT course_id, course_name, duration, description
+        FROM course
+        WHERE LOWER(course_name) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
+           OR LOWER(description) LIKE LOWER(CONCAT('%', #{keyword}, '%'))
+    </select>
+
+</mapper>

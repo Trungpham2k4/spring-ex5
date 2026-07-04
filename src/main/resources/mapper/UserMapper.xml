@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="fa.training.ex5.mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="User">
+        <id property="userId" column="user_id"/>
+        <result property="userName" column="username"/>
+        <result property="password" column="password"/>
+        <result property="fullName" column="full_name"/>
+        <result property="email" column="email"/>
+        <result property="status" column="status"/>
+
+        <collection property="roles" ofType="Role">
+            <id property="roleId" column="role_id"/>
+            <result property="roleName" column="role_name"/>
+        </collection>
+
+    </resultMap>
+
+    <select id="findById" parameterType="java.util.UUID"  resultType="User">
+        SELECT user_id, username, full_name, email, status, password
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+
+    <select id="findAll" resultType="User">
+        SELECT user_id, username, full_name, email, status, password
+        FROM users
+    </select>
+
+    <select id="findByUsername" resultMap="userResultMap">
+        SELECT u.user_id, u.username, u.password, u.full_name, u.email, u.status, r.role_id, r.role_name FROM users u
+        LEFT JOIN user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.role_id
+        WHERE u.username = #{username}
+    </select>
+
+    <select id="findUserWithRoles" resultMap="userResultMap">
+        SELECT u.user_id, u.username, u.password, u.full_name, u.email, u.status, r.role_id, r.role_name FROM users u
+        LEFT JOIN user_role ur ON u.user_id = ur.user_id
+        LEFT JOIN role r ON ur.role_id = r.role_id
+        WHERE u.user_id = #{userId}
+    </select>
+
+    <select id="findUserExist" resultType="User">
+        SELECT user_id, username, full_name, email, status, password
+        FROM users
+        WHERE username = #{username} OR email = #{email}
+    </select>
+
+    <insert id="insert" parameterType="User">
+        INSERT INTO users(user_id, username, password, full_name, email, status)
+        VALUES (#{userId}, #{userName}, #{password}, #{fullName}, #{email}, #{status})
+    </insert>
+
+    <update id="update" parameterType="User">
+        UPDATE users
+        SET username = #{userName},
+        password = #{password},
+        full_name = #{fullName},
+        email = #{email},
+        status = #{status}
+        WHERE user_id = #{userId}
+    </update>
+
+    <delete id="delete" parameterType="java.util.UUID">
+        DELETE FROM users
+        WHERE user_id = #{userId}
+    </delete>
+
+</mapper>

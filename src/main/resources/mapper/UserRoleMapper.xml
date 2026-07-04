@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="fa.training.ex5.mapper.UserRoleMapper">
+    <insert id="insertUserRole" parameterType="fa.training.ex5.entity.UserRole">
+        INSERT INTO user_role(user_id, role_id)
+        VALUES (#{userId}, #{roleId})
+    </insert>
+
+    <delete id="deleteUserRoleByUserId" parameterType="java.util.UUID">
+        DELETE FROM user_role
+        WHERE user_id = #{userId}
+    </delete>
+</mapper>
