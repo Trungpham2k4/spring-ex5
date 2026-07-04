@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="fa.training.ex5.mapper.MaterialMapper">
+
+    <select id="findAllByCourseId" resultType="Material">
+        SELECT material_id, file_name, store_file_name, file_size, file_type, upload_date, material_type, description
+        FROM material
+        WHERE course_id = #{courseId}
+    </select>
+
+    <select id="findById" parameterType="java.util.UUID" resultType="Material">
+        SELECT material_id, file_name, store_file_name, file_size, file_type, upload_date, material_type, description
+        FROM material
+        WHERE material_id = #{id}
+    </select>
+
+    <insert id="save">
+        INSERT INTO material(material_id, file_name, store_file_name, file_size, file_type, upload_date, material_type, description, course_id)
+        VALUES (
+        #{material.materialId},
+        #{material.fileName},
+        #{material.storeFileName},
+        #{material.fileSize},
+        #{material.fileType},
+        #{material.uploadDate},
+        #{material.materialType},
+        #{material.description},
+        #{courseId})
+    </insert>
+
+    <delete id="delete" parameterType="java.util.UUID">
+        DELETE FROM material
+        WHERE material_id = #{materialId}
+    </delete>
+
+</mapper>

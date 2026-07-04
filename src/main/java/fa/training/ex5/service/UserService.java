@@ -68,7 +68,8 @@ public class UserService {
         log.info("User created: {}", user.getUserId());
 
         request.roles().forEach(role -> {
-            Role storeRole = roleMapper.findByRoleName(role)
+            String roleNameUpper = role.toUpperCase();
+            Role storeRole = roleMapper.findByRoleName(roleNameUpper)
                     .orElseThrow(() -> new ResourceNotFoundException("Role not found with name: " + role));
             UserRole userRole = UserRole.builder()
                     .userId(user.getUserId())
@@ -112,7 +113,8 @@ public class UserService {
             userRoleMapper.deleteUserRoleByUserId(id);
 
             request.roles().forEach(role -> {
-                Role storeRole = roleMapper.findByRoleName(role)
+                String roleNameUpper = role.toUpperCase();
+                Role storeRole = roleMapper.findByRoleName(roleNameUpper)
                         .orElseThrow(() -> new ResourceNotFoundException("Role not found with name: " + role));
                 UserRole userRole = UserRole.builder()
                         .userId(user.getUserId())

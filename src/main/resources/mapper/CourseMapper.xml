@@ -18,6 +18,7 @@
     <select id="findPage" resultType="Course">
         SELECT course_id, course_name, duration, description
         FROM course
+        ORDER BY course_name ASC
         OFFSET #{offset} LIMIT #{limit}
     </select>
 

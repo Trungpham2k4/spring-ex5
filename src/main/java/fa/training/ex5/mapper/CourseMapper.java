@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface CourseMapper {
     Optional<Course> findById(@Param("courseId") UUID id);
     List<Course> findAll();
-    List<Course> findPage(int offset, int limit);
+    List<Course> findPage(@Param("offset") int offset, @Param("keyset") int limit);
     void save(Course course);
     void update(Course course);
     void delete(@Param("courseId") UUID id);

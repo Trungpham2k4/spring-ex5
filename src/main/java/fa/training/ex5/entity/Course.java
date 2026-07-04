@@ -3,6 +3,8 @@ package fa.training.ex5.entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -15,4 +17,6 @@ public class Course {
     String courseName;
     Integer duration;
     String description;
+
+    List<Material> materials = new ArrayList<>();
 }

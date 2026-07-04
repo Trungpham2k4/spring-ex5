@@ -2,11 +2,15 @@ package fa.training.ex5.controller;
 
 import fa.training.ex5.dto.ResponseApi;
 import fa.training.ex5.dto.request.CourseModifyRequest;
+import fa.training.ex5.dto.request.UploadMaterialRequest;
 import fa.training.ex5.dto.response.CourseInfoResponse;
+import fa.training.ex5.dto.response.MaterialInfoResponse;
 import fa.training.ex5.service.CourseService;
+import fa.training.ex5.service.MaterialService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +23,7 @@ import java.util.UUID;
 public class CourseController {
 
     private final CourseService courseService;
+    private final MaterialService materialService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -78,12 +83,38 @@ public class CourseController {
     }
 
     @GetMapping("/search")
+    @ResponseStatus(HttpStatus.OK)
     public ResponseApi<List<CourseInfoResponse>> searchCourses(@RequestParam(name = "keyword", defaultValue = "") String keyword) {
         List<CourseInfoResponse> courses = courseService.search(keyword);
         return ResponseApi.<List<CourseInfoResponse>>builder()
                 .data(courses)
                 .status(HttpStatus.OK)
                 .message("Search courses successfully")
+                .build();
+    }
+
+    @GetMapping("/{courseId}/materials")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseApi<List<MaterialInfoResponse>> getAllMaterials(@PathVariable UUID courseId){
+        List<MaterialInfoResponse> materials = materialService.getAllMaterials(courseId);
+        return ResponseApi.<List<MaterialInfoResponse>>builder()
+                .data(materials)
+                .status(HttpStatus.OK)
+                .message("Get all materials successfully")
+                .build();
+    }
+
+    @PostMapping(value = "/{courseId}/materials", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasAnyRole('ADMIN', 'TRAINER')")
+    public ResponseApi<String> uploadMaterial(
+            @PathVariable UUID courseId,
+            @Valid @ModelAttribute UploadMaterialRequest uploadMaterialRequest
+    ) {
+        materialService.uploadMaterial(courseId, uploadMaterialRequest);
+        return ResponseApi.<String>builder()
+                .status(HttpStatus.CREATED)
+                .message("Upload material successfully")
                 .build();
     }
 }

@@ -1,6 +1,7 @@
 package fa.training.ex5.exception;
 
 import fa.training.ex5.dto.ResponseApi;
+import fa.training.ex5.exception.custom.FilenameException;
 import fa.training.ex5.exception.custom.ResourceNotFoundException;
 import fa.training.ex5.exception.custom.UnauthenticatedException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.util.List;
 
@@ -71,6 +73,34 @@ public class GlobalExceptionHandler {
         return ResponseApi.<String>builder()
                 .status(HttpStatus.CONFLICT)
                 .errors(List.of(e.getMostSpecificCause().getMessage()))
+                .build();
+    }
+
+    @ExceptionHandler(FilenameException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseApi<String> handleFilenameException(FilenameException e) {
+        return ResponseApi.<String>builder()
+                .status(HttpStatus.BAD_REQUEST)
+                .errors(List.of(e.getMessage()))
+                .build();
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    @ResponseStatus(HttpStatus.CONTENT_TOO_LARGE)
+    public ResponseApi<String> handleMaxSizeException(MaxUploadSizeExceededException exc) {
+        return ResponseApi.<String>builder()
+                .status(HttpStatus.CONTENT_TOO_LARGE)
+                .message("File is too large")
+                .errors(List.of("Maximum upload size exceeded. Please upload a file smaller than 10MB."))
+                .build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseApi<String> handleRuntimeException(RuntimeException e) {
+        return ResponseApi.<String>builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .errors(List.of(e.getMessage()))
                 .build();
     }
 }

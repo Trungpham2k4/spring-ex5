@@ -4,13 +4,17 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import fa.training.ex5.dto.request.CourseModifyRequest;
 import fa.training.ex5.dto.response.CourseInfoResponse;
 import fa.training.ex5.entity.Course;
+import fa.training.ex5.entity.Material;
 import fa.training.ex5.exception.custom.ResourceNotFoundException;
 import fa.training.ex5.mapper.CourseMapper;
+import fa.training.ex5.mapper.MaterialMapper;
+import fa.training.ex5.utils.Constant;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,6 +24,7 @@ import java.util.UUID;
 public class CourseService {
 
     private final CourseMapper courseMapper;
+    private final MaterialMapper materialMapper;
 
     public List<CourseInfoResponse> getAllCourses(int page, int size) {
         page = page < 1 ? 1 : (page - 1);
@@ -63,6 +68,15 @@ public class CourseService {
     public void deleteCourse(UUID courseId) {
         Course course = courseMapper.findById(courseId)
                 .orElseThrow(() -> new ResourceNotFoundException("Course not found"));
+        List<Material> materials = materialMapper.findAllByCourseId(courseId);
+        for (Material material : materials) {
+            try {
+                Path filePath = Path.of(Constant.STORAGE, material.getStoreFileName()).toAbsolutePath();
+                java.nio.file.Files.deleteIfExists(filePath);
+            } catch (Exception e) {
+                log.error("Failed to delete physical file {} when deleting course", material.getStoreFileName());
+            }
+        }
         courseMapper.delete(courseId);
         log.info("Course deleted: {}", course);
     }
